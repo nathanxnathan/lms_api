@@ -3,23 +3,35 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type": "module",
-
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx watch src/main.ts",
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "typeorm": "tsx ./node_modules/typeorm/cli",
+    "migration:generate": "pnpm typeorm migration:generate",
+    "migration:run": "pnpm typeorm migration:run",
+    "migration:show": "pnpm typeorm migration:show",
+    "migration:revert": "pnpm typeorm migration:revert"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "class-validator": "^0.15.1",
     "dotenv": "^18.0.9",
+    "joi": "^18.3.2",
     "pg": "^8.23.1",
     "reflect-metadata": "^0.2.2",
     "typeorm": "^1.1.2"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
+    "eslint": "^10.14.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   }
 }

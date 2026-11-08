@@ -1,39 +1,45 @@
-import typeorm = require('typeorm');
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from "typeorm";
 
-@typeorm.Entity('users')
-export class User {
-    @typeorm.PrimaryGeneratedColumn('uuid')
+@Entity("users")
+export class UserEntity {
+  @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @typeorm.Column({ name: 'first_name', length: 100 })
+  @Column({ name: "first_name", type: "varchar", length: 100 })
   firstName!: string;
 
-  @typeorm.Column({ name: 'last_name', length: 100 })
+  @Column({ name: "last_name", type: "varchar", length: 100 })
   lastName!: string;
 
-  @typeorm.Column({ unique: true })
+  @Column({ type: "varchar", length: 255, unique: true })
   email!: string;
 
-  @typeorm.Column({ name: 'password_hash', type: 'text' })
+  @Column({ name: "password_hash", type: "text" })
   passwordHash!: string;
 
-  @typeorm.Column({ length: 30 })
+  @Column({ type: "varchar", length: 30 })
   role!: string;
 
-  @typeorm.Column({ name: 'is_active', default: true })
+  @Column({ name: "is_active", type: "boolean", default: true })
   isActive!: boolean;
 
-  @typeorm.CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  @CreateDateColumn({ name: "created_at", type: "timestamptz" })
   createdAt!: Date;
 
-  @typeorm.UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
+  @UpdateDateColumn({ name: "updated_at", type: "timestamptz" })
   updatedAt!: Date;
 
-  @typeorm.DeleteDateColumn({
-    name: 'deleted_at',
-    type: 'timestamptz',
+  @DeleteDateColumn({
+    name: "deleted_at",
+    type: "timestamptz",
     nullable: true,
   })
   deletedAt!: Date | null;
 }
-
