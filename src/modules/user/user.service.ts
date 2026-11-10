@@ -1,9 +1,4 @@
-declare const require: (moduleName: string) => any;
-
-const bcrypt: {
-  hash: (value: string, saltRounds: number | string) => Promise<string>;
-  compare: (value: string, hash: string) => Promise<boolean>;
-} = require("bcryptjs");
+import bcrypt from "bcryptjs";
 
 import { UserEntity } from "./user.entity";
 import { UserRepository } from "./user.respository";
@@ -21,8 +16,7 @@ export class UserService {
     user.email = userInput.email;
     user.firstName = userInput.firstName;
     user.lastName = userInput.lastName;
-    passwordHash;
-    user.role = "user";
+    user.passwordHash = passwordHash!;
     user.isActive = true;
 
     const userRepository = new UserRepository();

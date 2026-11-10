@@ -1,15 +1,19 @@
-import { AppDataSource } from "./config/database";
+import express from "express";
 
+import { AppDataSource } from "./config/database";
 import { env } from "./config/env";
-// import { createApp } from './app'; // Your HTTP app, once defined
+import userRoutes from "./modules/user/user.routes";
 
 async function main() {
   await AppDataSource.initialize();
 
-  // const app = createApp();
-  // app.listen(env.PORT, () => {
-  //   console.log(`Server listening on port ${env.PORT}`);
-  // });
+  const app = express();
+  app.use(express.json());
+  app.use("/api/users", userRoutes);
+
+  app.listen(env.PORT, () => {
+    console.log(`Server listening on port ${env.PORT}`);
+  });
 }
 
 main().catch((error: unknown) => {

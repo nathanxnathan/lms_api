@@ -7,6 +7,12 @@ import {
   DeleteDateColumn,
 } from "typeorm";
 
+export enum UserRole {
+  ADMIN = "admin",
+  USER = "user",
+  INSTRUCTOR = "instructor",
+}
+
 @Entity("users")
 export class UserEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -24,8 +30,12 @@ export class UserEntity {
   @Column({ name: "password_hash", type: "text" })
   passwordHash!: string;
 
-  @Column({ type: "varchar", length: 30 })
-  role!: string;
+  @Column({
+    type: "enum",
+    enum: UserRole,
+    default: UserRole.USER,
+  })
+  role: UserRole = UserRole.USER;
 
   @Column({ name: "is_active", type: "boolean", default: true })
   isActive!: boolean;
