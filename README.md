@@ -6,9 +6,8 @@ learning materials, assignments, grading, and related academic workflows.
 
 ## Current status
 
-The project is under active development. The current implemented feature is
-user creation. Authentication, course management, and the other LMS modules are
-planned, not yet available.
+The project is under active development. Current features include user
+registration and login, plus administrator-only department and course creation.
 
 ## Technology
 
@@ -53,8 +52,8 @@ planned, not yet available.
 3. Copy `.env.example` to `.env`. Set `DATABASE_URL` to match the database
    credentials above, and replace both JWT secret placeholders with unique,
    random values of at least 32 characters. These secrets are required by the
-   current environment configuration, even though authentication endpoints
-   have not been implemented yet.
+   environment configuration. Access tokens are signed with `JWT_SECRET` and
+   must have a lifetime between 1 minute and 1 hour.
 
 4. Create the UUID extension used by the initial migration, then run migrations:
 
@@ -72,10 +71,10 @@ planned, not yet available.
 The API listens on port `4000` by default. Change `PORT` in `.env` to use a
 different port.
 
-## Current endpoint
+## Endpoints
 
-Create a user with `POST /api/users`. Send JSON with
-`Content-Type: application/json`:
+Register a user with `POST /api/users`. Registration always assigns the `user`
+role; the public endpoint does not accept role changes:
 
 ```json
 {
@@ -86,8 +85,23 @@ Create a user with `POST /api/users`. Send JSON with
 }
 ```
 
-The new user's role defaults to `user`. The API returns the created user with
-HTTP status `201`.
+The API returns the created user's public data with HTTP status `201`.
+
+Log in with `POST /api/users/login` using the registered email and password.
+The response contains a short-lived access token. Send it on protected requests
+as `Authorization: Bearer <accessToken>`.
+
+Only active users with the `admin` role can create resources:
+
+- `POST /api/departments` with `name`, `code`, and optional `description`
+- `POST /api/courses` with `name`, `code`, and optional `description`
+
+An administrator account must be provisioned by a trusted operator; never
+promote accounts through the public registration endpoint. Apply migrations
+before using department or course creation.
+
+In production, serve the API over TLS and enforce shared rate limiting for
+`POST /api/users/login` at the gateway or load balancer.
 
 ## Development commands
 

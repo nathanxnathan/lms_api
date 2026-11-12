@@ -27,7 +27,7 @@ export class UserEntity {
   @Column({ type: "varchar", length: 255, unique: true })
   email!: string;
 
-  @Column({ name: "password_hash", type: "text" })
+  @Column({ name: "password_hash", type: "text", select: false })
   passwordHash!: string;
 
   @Column({
