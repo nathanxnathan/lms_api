@@ -4,6 +4,7 @@ import Joi from 'joi';
 interface EnvSchema {
   NODE_ENV: 'development' | 'production' | 'test';
   PORT: number;
+  CORS_ORIGIN: string;
   DATABASE_URL: string;
   DATABASE_SSL: boolean;
   JWT_SECRET: string;
@@ -27,6 +28,7 @@ interface EnvSchema {
 const schema = Joi.object<EnvSchema>({
   NODE_ENV: Joi.string().valid('development', 'production', 'test').default('development'),
   PORT: Joi.number().integer().min(1).max(65535).default(4000),
+  CORS_ORIGIN: Joi.string().uri().default('http://localhost:3000'),
   DATABASE_URL: Joi.string()
     .uri({ scheme: ['postgres', 'postgresql'] })
     .required(),

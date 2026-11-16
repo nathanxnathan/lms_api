@@ -71,6 +71,11 @@ registration and login, plus administrator-only department and course creation.
 The API listens on port `4000` by default. Change `PORT` in `.env` to use a
 different port.
 
+For browser-based local development, set `CORS_ORIGIN` to the frontend origin
+(for example, `http://localhost:3000` for Vite). Restart the API after changing
+it. This setting allows that origin to make API requests; it does not affect
+requests from tools such as Postman.
+
 ## Endpoints
 
 Register a user with `POST /api/users`. Registration always assigns the `user`
@@ -99,6 +104,17 @@ Only active users with the `admin` role can create resources:
 An administrator account must be provisioned by a trusted operator; never
 promote accounts through the public registration endpoint. Apply migrations
 before using department or course creation.
+
+To create the initial administrator, set `ADMIN_EMAIL`, `ADMIN_PASSWORD`,
+`ADMIN_FIRST_NAME`, and `ADMIN_LAST_NAME` in `.env`, then run:
+
+```powershell
+pnpm seed:admin
+```
+
+The seed hashes the password and does not change an existing admin account. If
+the configured email belongs to a non-admin account, the seed exits with an
+error rather than promoting it.
 
 In production, serve the API over TLS and enforce shared rate limiting for
 `POST /api/users/login` at the gateway or load balancer.

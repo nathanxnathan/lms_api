@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 
 import { AppDataSource } from "./config/database";
 import { env } from "./config/env";
@@ -10,6 +11,13 @@ async function main() {
   await AppDataSource.initialize();
 
   const app = express();
+  app.use(
+    cors({
+      origin: env.CORS_ORIGIN,
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+    }),
+  );
   app.use(express.json({ limit: "16kb" }));
   app.use("/api/users", userRoutes);
   app.use("/api/departments", departmentRoutes);
