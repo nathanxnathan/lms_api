@@ -93,8 +93,25 @@ role; the public endpoint does not accept role changes:
 The API returns the created user's public data with HTTP status `201`.
 
 Log in with `POST /api/users/login` using the registered email and password.
-The response contains a short-lived access token. Send it on protected requests
-as `Authorization: Bearer <accessToken>`.
+The response contains a short-lived access token and a refresh token. Send the
+access token on protected requests as `Authorization: Bearer <accessToken>`.
+When it expires, exchange the current refresh token at `POST /api/users/refresh`:
+
+```json
+{
+  "refreshToken": "<refreshToken>"
+}
+```
+
+The response contains a new access token and a **rotated** refresh token. Store
+the new refresh token and discard the old one; each refresh token can be used
+only once. Each rotation renews its idle expiry; `JWT_REFRESH_EXPIRES_IN`
+defaults to seven days. These endpoints currently exchange refresh tokens in
+JSON, so treat them as credentials and avoid browser storage such as
+`localStorage`; browser deployments should use server-set Secure, HttpOnly
+cookies with appropriate CSRF protection. `POST /api/users/logout` accepts the
+current refresh token in the same JSON shape and revokes it. Any already issued
+access token remains valid until its short expiration.
 
 Only active users with the `admin` role can create resources:
 
