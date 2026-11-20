@@ -5,9 +5,11 @@ import {
 } from "../../common/auth/access-token";
 import { REFRESH_TOKEN_LIFETIME_SECONDS } from "../../common/auth/refresh-token";
 import { validateDtoBody } from "../../common/validation/validate-dto-body";
+import { validateJsonBody } from "../../common/validation/validate-json-body";
 import { LoginInput } from "./dto/login.input";
 import { RefreshTokenInput } from "./dto/refresh-token.input";
 import { UserInput } from "./dto/user.input";
+import { completeAccountSetupSchema } from "./dto/complete-account-setup.input";
 import { UserEntity } from "./user.entity";
 import { UserService } from "./user.service";
 
@@ -123,6 +125,35 @@ export class UserController {
     try {
       await this.userService.revokeRefreshToken(body.value.refreshToken);
       res.status(204).end();
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  completeAccountSetup = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const body = validateJsonBody(req.body, completeAccountSetupSchema);
+    if (!body.valid) {
+      res.status(400).json({ message: body.message });
+      return;
+    }
+
+    try {
+      const completed = await this.userService.completeAccountSetup(
+        body.value.token,
+        body.value.newPassword,
+      );
+      if (!completed) {
+        res.status(400).json({ message: "Invalid or expired setup link" });
+        return;
+      }
+
+      res.status(200).json({
+        message: "Password set successfully; you can now sign in",
+      });
     } catch (error) {
       next(error);
     }

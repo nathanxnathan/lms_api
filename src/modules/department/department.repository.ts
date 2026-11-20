@@ -5,4 +5,10 @@ export class DepartmentRepository {
   create(department: DepartmentEntity): Promise<DepartmentEntity> {
     return AppDataSource.getRepository(DepartmentEntity).save(department);
   }
+
+  findAll(): Promise<DepartmentEntity[]> {
+    return AppDataSource.getRepository(DepartmentEntity).find({
+      order: { name: "ASC" },
+    });
+  }
 }

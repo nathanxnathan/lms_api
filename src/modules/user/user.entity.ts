@@ -5,12 +5,16 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  JoinColumn,
+  ManyToOne,
 } from "typeorm";
+import { DepartmentEntity } from "../department/department.entity";
 
 export enum UserRole {
   ADMIN = "admin",
   USER = "user",
   INSTRUCTOR = "instructor",
+  STUDENT = "student",
 }
 
 @Entity("users")
@@ -29,6 +33,25 @@ export class UserEntity {
 
   @Column({ name: "password_hash", type: "text", select: false })
   passwordHash!: string;
+
+  @Column({
+    name: "student_id",
+    type: "varchar",
+    length: 32,
+    nullable: true,
+    unique: true,
+  })
+  studentId!: string | null;
+
+  @Column({ name: "must_set_password", type: "boolean", default: false })
+  mustSetPassword!: boolean;
+
+  @Column({ name: "department_id", type: "uuid", nullable: true })
+  departmentId!: string | null;
+
+  @ManyToOne(() => DepartmentEntity, { nullable: true, onDelete: "SET NULL" })
+  @JoinColumn({ name: "department_id" })
+  department!: DepartmentEntity | null;
 
   @Column({
     type: "enum",

@@ -13,4 +13,8 @@ export class DepartmentService {
 
     return new DepartmentRepository().create(department);
   }
+
+  listDepartments(): Promise<DepartmentEntity[]> {
+    return new DepartmentRepository().findAll();
+  }
 }

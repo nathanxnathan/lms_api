@@ -4,6 +4,7 @@ export const userTypes = `
     ADMIN = "admin",
     USER = "user",
     INSTRUCTOR = "instructor",
+    STUDENT = "student",
   }
 
   type UserSignUp = {

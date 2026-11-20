@@ -1,8 +1,11 @@
 import {
+  ArrayMinSize,
+  IsArray,
   IsOptional,
   IsString,
   MaxLength,
   MinLength,
+  IsUUID,
 } from "class-validator";
 
 export class CourseInput {
@@ -21,4 +24,9 @@ export class CourseInput {
   @MinLength(1)
   @MaxLength(200)
   description?: string | null;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsUUID("4", { each: true })
+  departmentIds!: string[];
 }

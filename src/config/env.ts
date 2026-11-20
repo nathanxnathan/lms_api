@@ -17,6 +17,7 @@ interface EnvSchema {
   SENDGRID_API_KEY: string | undefined;
   MAIL_DEFAULT_FROM: string | undefined;
   ADMIN_NOTIFICATION_EMAIL: string | undefined;
+  ACCOUNT_SETUP_URL: string | undefined;
   FIREBASE_PROJECT_ID: string | undefined;
   FIREBASE_CLIENT_EMAIL: string | undefined;
   FIREBASE_PRIVATE_KEY: string | undefined;
@@ -47,6 +48,10 @@ const schema = Joi.object<EnvSchema>({
     .optional(),
   // Comma-separated list of admin recipients for internal alerts (low stock, prescription review, etc.)
   ADMIN_NOTIFICATION_EMAIL: Joi.string().allow('').optional(),
+  ACCOUNT_SETUP_URL: Joi.string()
+    .uri({ scheme: ['http', 'https'] })
+    .allow('')
+    .optional(),
   FIREBASE_PROJECT_ID: Joi.string().optional(),
   FIREBASE_CLIENT_EMAIL: Joi.string().optional(),
   FIREBASE_PRIVATE_KEY: Joi.string().optional(),

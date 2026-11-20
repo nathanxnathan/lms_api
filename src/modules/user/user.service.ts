@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import bcrypt from "bcryptjs";
 import { IsNull } from "typeorm";
 import { AppDataSource } from "../../config/database";
@@ -9,6 +10,7 @@ import {
 } from "../../common/auth/refresh-token";
 import { UserEntity } from "./user.entity";
 import { RefreshTokenEntity } from "./refresh-token.entity";
+import { AccountSetupTokenEntity } from "./account-setup-token.entity";
 
 import { UserRepository } from "./user.respository";
 import { UserInput } from "./dto/user.input";
@@ -134,10 +136,59 @@ export class UserService {
     }
 
     const passwordMatches = await bcrypt.compare(password, user.passwordHash);
-    if (!passwordMatches || !user.isActive || user.deletedAt) {
+    if (
+      !passwordMatches ||
+      !user.isActive ||
+      user.deletedAt ||
+      user.mustSetPassword
+    ) {
       return null;
     }
 
     return user;
+  }
+
+  async completeAccountSetup(
+    token: string,
+    newPassword: string,
+  ): Promise<boolean> {
+    const tokenHash = createHash("sha256").update(token).digest("hex");
+    return AppDataSource.transaction(async (manager) => {
+      const tokenRepository =
+        manager.getRepository(AccountSetupTokenEntity);
+      const setupToken = await tokenRepository.findOne({
+        where: { tokenHash, usedAt: IsNull() },
+        relations: { user: true },
+        lock: { mode: "pessimistic_write" },
+      });
+      const now = new Date();
+      if (
+        !setupToken ||
+        setupToken.expiresAt <= now ||
+        !setupToken.user ||
+        !setupToken.user.isActive ||
+        setupToken.user.deletedAt ||
+        !setupToken.user.mustSetPassword
+      ) {
+        return false;
+      }
+
+      setupToken.user.passwordHash = await bcrypt.hash(
+        newPassword,
+        BCRYPT_SALT_ROUNDS,
+      );
+      setupToken.user.mustSetPassword = false;
+      await manager.getRepository(UserEntity).save(setupToken.user);
+
+      await tokenRepository
+        .createQueryBuilder()
+        .update()
+        .set({ usedAt: now })
+        .where('"user_id" = :userId AND "used_at" IS NULL', {
+          userId: setupToken.user.id,
+        })
+        .execute();
+      return true;
+    });
   }
 }

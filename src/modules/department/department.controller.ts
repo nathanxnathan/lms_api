@@ -12,6 +12,15 @@ const createDepartmentSchema = Joi.object({
 export class DepartmentController {
   private departmentService = new DepartmentService();
 
+  list = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const departments = await this.departmentService.listDepartments();
+      res.status(200).json({ data: departments });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   create = async (req: Request, res: Response, next: NextFunction) => {
     const body = validateJsonBody(req.body, createDepartmentSchema);
     if (!body.valid) {

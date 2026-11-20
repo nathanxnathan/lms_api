@@ -6,6 +6,7 @@ import { env } from "./config/env";
 import courseRoutes from "./modules/course/course.routes";
 import departmentRoutes from "./modules/department/department.routes";
 import userRoutes from "./modules/user/user.routes";
+import enrollmentRoutes from "./modules/enrollment/enrollment.routes";
 
 async function main() {
   await AppDataSource.initialize();
@@ -20,6 +21,7 @@ async function main() {
   );
   app.use(express.json({ limit: "16kb" }));
   app.use("/api/users", userRoutes);
+  app.use("/api/enrollments", enrollmentRoutes);
   app.use("/api/departments", departmentRoutes);
   app.use("/api/courses", courseRoutes);
 
